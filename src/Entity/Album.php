@@ -3,12 +3,21 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use App\Repository\AlbumRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=AlbumRepository::class)
- * @ApiResource()
+ * @ApiResource(normalizationContext={"groups"={"outAlbum"}},
+ *  collectionOperations={
+ *      "get",
+ *      "post"={"security"="is_granted('ROLE_USER')"}
+ *  }
+ * )
  */
 #[ApiResource]
 class Album
@@ -17,22 +26,26 @@ class Album
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"outAlbum"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"outAlbum"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"outAlbum"})
      */
     private $date;
 
     /**
      * @ORM\OneToOne(targetEntity=Artist::class, inversedBy="album", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"outAlbum"})
      */
     private $artist;
 
